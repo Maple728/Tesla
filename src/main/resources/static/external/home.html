@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<title>特斯拉充电桩</title>
+	
+	<link rel="stylesheet" type="text/css" href="../global/plugins/bootstrap-3.3.7-dist/css/bootstrap.css" />
+	<link rel="stylesheet" type="text/css" href="home.css" />
+	
+	<link rel="stylesheet" type="text/css" href="../global/css/normalize.css" />
+	<link rel="stylesheet" type="text/css" href="../global/fonts/font-awesome-4.3.0/css/font-awesome.min.css" />
+	<!--  <link rel="stylesheet" type="text/css" href="../global/css/demo.css" />-->
+	<link rel="stylesheet" type="text/css" href="../global/css/component.css" />
+	<link rel="stylesheet" type="text/css" href="../global/css/custom-bars.css" />
+
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=XyhQAWr2mGwd5xBOSg8tZ4w8lDc6QTuh"></script>
+
+</head>
+<body ng-app="homeApp" ng-controller="homeCtrl">
+    
+    <div class="full-screen left-content-wrap">
+        <div class="full-screen left-content">
+            <div id="allmap" class="full-screen">
+            </div>           
+        </div>
+    </div>
+    <div class="full-screen right-content">
+        <form class="sidebar">
+            <div>
+                <img src="../global/imgs/tesla-logo.jpg" alt="Tesla Logo" width="100%" />
+            </div>
+            <div class="form-group sidebar-item" style="padding: 15px 10px;">
+                     <div class="input-group">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default active" type="button" title="当前定位">
+                                <span class="glyphicon glyphicon-map-marker" aria-hidden="true" style="font-size:15px;"></span>
+                            </button>
+                        </span>                        
+                        <input class="form-control" type="text" placeholder="Around..."/>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default btn-primary" type="button" title="搜索周边">
+                                <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                            </button>
+                        </span>
+                    </div>
+            </div>
+            <div class="form-group sidebar-item" style="padding: 15px 10px;">
+                <div class="route-part">
+                    <div style="margin-bottom:10px;">
+                         <a class="a-like-btn" style="position:relative; top:-15px; padding-right:5px; font-size:25px;">
+                            <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
+                        </a>
+                        <div class="inline-div" style="width:240px;">
+                            <input class="form-control" placeholder="Start..." style="margin-bottom: 10px;"/>
+                            <input class="form-control" placeholder="End..." />         
+                        </div>                   
+                    </div>
+                    <buton class="btn btn-primary btn-block" ng-click="navigate()">Go</buton>
+                </div>            
+            </div>
+            <div class="form-group sidebar-item">
+            	<div style="margin-top:-15px;">
+            		<label for="battery-input" class="control-label" style="margin-left: 74px;">续航里程:</label>
+	           		<div class="input-group" style="width:135px;margin:-30px 0 10px auto;">
+	            		<input id="battery-input" type="number" class="form-control" placeholder="Km" ng-model="range"/>
+	            		<span class="input-group-addon" id="basic-addon2">公里</span>
+	            	</div>
+            	
+            	</div>
+                <div class="flexy-column" style="padding-top:50px;">
+					<div class="progress-factor flexy-item">
+						<div class="progress-bar-c">
+							<div class="bar has-rotation has-colors navy ruler move" role="progressbar" aria-valuenow="{{ calcPercentage(range, maxRange) }}" aria-valuemin="0" aria-valuemax="100">
+								<div class="tooltip heat-gradient-tooltip" style="opacity:1" onmousedown="mousedown(event)"></div>
+								<div class="bar-face face-position roof percentage"></div>
+								<div class="bar-face face-position back percentage"></div>
+								<div class="bar-face face-position floor percentage volume-lights"></div>
+								<div class="bar-face face-position left"></div>
+								<div class="bar-face face-position right"></div>
+								<div class="bar-face face-position front percentage volume-lights shine"></div>
+							</div>
+						</div>
+					</div>        	
+            	</div>
+           	</div>
+   
+            
+            <div class="form-group sidebar-item">
+            	<div style="margin-top:-15px;">
+            		<label for="battery-input" class="control-label" style="margin-left: 94px;">电池电量:</label>
+	           		<div class="input-group" style="width:110px;margin:-30px 0 10px auto;">
+	            		<input id="battery-input" type="number" class="form-control" placeholder="Per" ng-model="battry"/>
+	            		<span class="input-group-addon" id="basic-addon2">%</span>
+	            	</div>
+            	
+            	</div>
+            	
+
+            	
+            	<div class="flexy-column" style="padding-top:50px;">
+					<div class="progress-factor flexy-item">
+						<div class="progress-bar-c">
+							<div class="bar has-rotation has-colors red heat-gradient move" role="progressbar" aria-valuenow="{{battry}}" aria-valuemin="0" aria-valuemax="100">
+								<div class="tooltip heat-gradient-tooltip" style="opacity:1" onmousedown="mousedown(event)"></div>
+								<div class="bar-face face-position roof percentage"></div>
+								<div class="bar-face face-position back percentage"></div>
+								<div class="bar-face face-position floor percentage volume-lights"></div>
+								<div class="bar-face face-position left"></div>
+								<div class="bar-face face-position right"></div>
+								<div class="bar-face face-position front percentage volume-lights shine"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+            </div>
+            
+        </form>
+    </div>
+
+</body>
+
+
+<script src="../global/plugins/jquery-3.2.0.min.js" ></script>
+<script src="../global/plugins/angular-1.5.8/angular.js" ></script> 
+<script src="../global/plugins/lodash-min.js" ></script> 
+
+<script src="utils.js"></script>
+
+<script src="home.js"></script>
+<!--  <script src="arround.js"></script> -->
+<script src="remote-service.js"></script>
+
+</html>

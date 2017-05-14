@@ -1,0 +1,43 @@
+html, body{
+    height:100%;
+}
+
+.full-screen {
+    height:100%;
+}
+
+a.a-like-btn {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+div.inline-div {
+    display: inline-block;
+}
+
+.left-content-wrap {
+    margin-left: -300px;
+    float : left;
+    width: 100%;
+}
+
+.left-content {
+    margin-left: 300px;
+}
+
+.right-content {
+    float: right;
+    width: 300px;
+}
+
+.sidebar {
+}
+
+.sidebar .sidebar-item {
+    padding: 30px 10px;
+    border-color: rgb(229, 229, 229);
+    border-style: solid;
+    border-width: 1px;
+    margin: 0;
+    background-color: rgb(249, 249, 249);
+}
