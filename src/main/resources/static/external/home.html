@@ -52,9 +52,10 @@
                             <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
                         </a>
                         <div class="inline-div" style="width:240px;">
-                            <input class="form-control" placeholder="Start..." style="margin-bottom: 10px;"/>
-                            <input class="form-control" placeholder="End..." />         
-                        </div>                   
+                            <input id="originPoint" class="form-control" placeholder="Start..." style="margin-bottom: 10px;" ng-model="originKey"/>
+                            <input id="destPoint" class="form-control" placeholder="End..." ng-model="destKey"/>         
+                        </div>
+                        <div id="searchResultPanel" style="border:1px solid #C0C0C0;width:150px;height:auto; display:none;"></div>            
                     </div>
                     <buton class="btn btn-primary btn-block" ng-click="navigate()">Go</buton>
                 </div>            
