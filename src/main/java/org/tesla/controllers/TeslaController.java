@@ -71,5 +71,26 @@ public class TeslaController {
 		return chargerRepostory.getChargerList();
 	}
 	
+	@GetMapping("/getAllSuperChargers")
+	public List<TeslaCharger> getAllSuperChargers(){
+		List<TeslaCharger> result = new ArrayList<>();
+		for(TeslaCharger charger : chargerRepostory.getChargerList()){
+			if(charger.isSuperCharger()){
+				result.add(charger);
+			}
+		}
+		return result;
+	}
+	
+	@GetMapping("/getAllOtherChargers")
+	public List<TeslaCharger> getAllOtherChargers(){
+		List<TeslaCharger> result = new ArrayList<>();
+		for(TeslaCharger charger : chargerRepostory.getChargerList()){
+			if(!charger.isSuperCharger()){
+				result.add(charger);
+			}
+		}
+		return result;
+	}
 	
 }

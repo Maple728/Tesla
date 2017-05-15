@@ -119,10 +119,10 @@ public class TeslaInit {
 			// Get all chargers info from Tesla Web Server
 			
 			String chargerType = "super_charger";
-			double topRightLatitude =  28.154993;//54.575691;	
-			double topRightLongitude = 103.746916;//144.488317;
-			double BottomLeftLatitude = 21.87267;//17.737584;
-			double BottomLeftLongitude = 86.085511;//68.17633;
+			double topRightLatitude =  54.575691;	
+			double topRightLongitude = 144.488317;
+			double BottomLeftLatitude = 17.737584;
+			double BottomLeftLongitude = 68.17633;
 			
 			String teslaURL = "https://www.tesla.cn/all-locations?type="
 				+ chargerType 
@@ -224,8 +224,6 @@ class GenerateMapThread{
 	public void run() {
 		int maxRouteCount = TeslaConstants.BAIDU_ROUTE_MAX_COUNT < list.size() ? TeslaConstants.BAIDU_ROUTE_MAX_COUNT : list.size();
 		
-		int baiduInvokeCount = 0;
-		
 		// storing the destination chargers for Baidu Web request once.
 		List<TeslaCharger> perList = new ArrayList<>();
 		
@@ -245,7 +243,6 @@ class GenerateMapThread{
 					perList.add(list.get(endIndex));
 					if(perList.size() >= maxRouteCount){
 						double[] distances = BaiduMapRemote.getDistBetweenChargersByBaidu(list.get(startIndex), perList);
-						baiduInvokeCount++;
 						for(int j = 0; j < distances.length; j++){
 							int destIndex = list.indexOf(perList.get(j));
 							map[startIndex][destIndex] = distances[j];
@@ -257,7 +254,6 @@ class GenerateMapThread{
 			}
 			if(!perList.isEmpty()){
 				double[] distances = BaiduMapRemote.getDistBetweenChargersByBaidu(list.get(startIndex), perList);
-				baiduInvokeCount++;
 				for(int j = 0; j < distances.length; j++){
 					int destIndex = list.indexOf(perList.get(j));
 					map[startIndex][destIndex] = distances[j];
@@ -269,6 +265,6 @@ class GenerateMapThread{
 		}
 		// Store the map to disk
 		TeslaInit.storeMapToDisk(map);
-		System.out.println("Baidu invoke count: " + baiduInvokeCount);
+		System.out.println("Baidu invoke count: " + TeslaApplication.baiduAPICount);
 	}
 }

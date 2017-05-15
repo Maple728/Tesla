@@ -41,3 +41,15 @@ div.inline-div {
     margin: 0;
     background-color: rgb(249, 249, 249);
 }
+
+.bottom-nav{
+    float: right;
+    position: relative;
+    top: -60px;
+    left: -30px;
+}
+
+.bottom-nav button {
+	width:150px;
+	margin-right:20px;
+}

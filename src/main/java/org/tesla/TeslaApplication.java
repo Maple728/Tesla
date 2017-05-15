@@ -20,17 +20,21 @@ public class TeslaApplication {
 	
 	public static ChargerRepository chargerRepostory = new ChargerRepository();
 	
+	public static int baiduAPICount = 0;
+	
 	public static void main(String[] args) throws JsonParseException, JsonMappingException, IOException {
 		// boot whole spring container
 		SpringApplication.run(TeslaApplication.class, args);
 		
 		// init all charger data
+		logger.info("Loading charger repository data...");
 		chargerRepostory.setChargerList(TeslaInit.getTeslaRepositoryRemote());
-		logger.info("Loaded charger repository data");
+		logger.info("Loaded charger repository data successly!");
 		
 		// init matrix of distances
+		logger.info("Loading charger respository route maps.....");
 		chargerRepostory.setDistanceMap(TeslaInit.generateMapMultiple(chargerRepostory.getChargerList()));
-		logger.info("Loaded charger respository route maps");
+		logger.info("Loaded charger respository route maps successly!");
 	}
 
 }

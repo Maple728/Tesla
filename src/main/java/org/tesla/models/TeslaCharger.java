@@ -11,6 +11,8 @@ import java.util.List;
 
 public class TeslaCharger {
 	
+	public static final String TYPE_SUPER_CHARGER = "supercharger";
+	
 	private int nid;
 	private String title;
 	private List<String> locationType;
@@ -88,5 +90,17 @@ public class TeslaCharger {
 	
 	public int hashCode(){
 		return this.getNid();
+	}
+	
+	public boolean isSuperCharger(){
+		if(locationType == null)
+			return false;
+		
+		for(String type : locationType){
+			if(TYPE_SUPER_CHARGER.equals(type)){
+				return true;
+			}
+		}
+		return false;
 	}
 }

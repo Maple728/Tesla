@@ -7,13 +7,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
+import org.tesla.TeslaApplication;
 import org.tesla.TeslaConstants;
 import org.tesla.models.TeslaCharger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BaiduMapRemote {
-	private final static String baiduAK = "7OFG0fFwHTeGYdA4psdci0uDbGLV8bDI";
+	private final static String baiduAK = "VbNe7EOv2sxztffNnNZBa5KbcZ99SwwP";
 	
 	private static boolean isLimit = false;
 	
@@ -21,6 +22,9 @@ public class BaiduMapRemote {
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static double[] getDistBetweenChargersByBaidu(TeslaCharger originCharger, List<TeslaCharger> destChargerlist){
+		// For counting the number of invoking baidu API
+		TeslaApplication.baiduAPICount++;
+		
 		double[] result = new double[destChargerlist.size()];
 		
 		if(isLimit){
@@ -53,7 +57,7 @@ public class BaiduMapRemote {
 		}
 		
 		if(results == null){
-			logger.error("The count of Baidu API invoking is upper limit! Now will use direct calc");
+			logger.error("The count of Baidu API invoking is upper limit! Now will use direct calculate------- Baidu invoke count:" + TeslaApplication.baiduAPICount);
 			isLimit = true;
 			for(int i = 0; i < result.length; i++){
 				result[i] = getDistBetweenChargersByCoord(originCharger, destChargerlist.get(i));
