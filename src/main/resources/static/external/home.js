@@ -19,10 +19,10 @@ function initMap(map){
 }
 
 var homeApp = angular.module('homeApp', []);
-homeApp.controller('homeCtrl', function($scope, remoteService, $q){
-	$scope.maxRange = 1000;
-	$scope.battery = 70;
-	$scope.range = 400;
+homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
+	$scope.maxRange = 1000;		// kilometers
+	$scope.battery = 70;	// percentage
+	$scope.range = 400;		// kilometers
 	
 	$scope.originKey;
 	$scope.destKey;
@@ -30,6 +30,9 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 	
 	$scope.superChargerMarkerList = [];
 	$scope.otherChargerMarkerList = [];
+	
+	$scope.superChargerCircleList = [];
+	$scope.otherChargerCircleList = [];
 	
 	$scope.isShowSuper = true;
 	$scope.isShowOther = false;
@@ -39,9 +42,14 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 		$scope.isShowSuper = !$scope.isShowSuper;
 		if($scope.isShowSuper){
 			showSuperChargers();
+			if($scope.isShowCircle){
+				showSuperCircle();
+			}
 		}
 		else {
 			hideSuperChargers();
+			if($scope.isShowCircle)
+				hideSuperCircle();
 		}
 	}
 	
@@ -49,13 +57,40 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 		$scope.isShowOther = !$scope.isShowOther;
 		if($scope.isShowOther){
 			showOtherChargers();
+			if($scope.isShowCircle){
+				showOtherCircle();
+			}
 		}
 		else {
 			hideOtherChargers();
+			if($scope.isShowCircle){
+				hideOtherCircle();
+			}
 		}
 	}
 	
 	//$scope.showSuperChargers();
+	
+	$scope.isShowCircle = false;
+	$scope.addCircles = function(){
+		$scope.isShowCircle = !$scope.isShowCircle;
+		if($scope.isShowCircle){
+			if($scope.isShowSuper){
+				showSuperCircle();
+			}
+			if($scope.isShowOther){
+				showOtherCircle();
+			}
+		}
+		else {
+			if($scope.isShowSuper){
+				hideSuperCircle();
+			}
+			if($scope.isShowOther){
+				hideOtherCircle();
+			}			
+		}
+	}
 	
 	$scope.calcPercentage = function(range, maxRange){
 		return Math.round(range / maxRange * 100);
@@ -72,7 +107,7 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 				console.log(origin);
 				console.log($scope.destKey + dest);
 				console.log(dest);
-				remoteService.getNavigationResult(origin, dest, $scope.range * $scope.battery / 100, $scope.range).success(function(response){
+				remoteService.getNavigationResult(origin, dest, $scope.range * $scope.battery * 10, $scope.range * 1000).success(function(response){
 					console.log(response);
 				});
 			});
@@ -88,9 +123,18 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 		$scope.originKey = temp;
 	}
 	
+	$scope.clearAll = function(){
+		map.clearOverlays();
+		$timeout(function(){
+			$scope.isShowSuper = false;
+			$scope.isShowOther = false;
+			$scope.isShowCircle = false;
+		}, 500);
+	}
+	
 	$scope.searchAround = function(key){
 		var aroundRadius = 10000;
-		map.clearOverlays();
+		$scope.clearAll();
 		localSearchByKey(key).then(function(point){
 			var mPoint = new BMap.Point(point.longitude, point.latitude);
 			var circle = new BMap.Circle(mPoint, aroundRadius,{fillColor:"blue", strokeWeight: 1 ,fillOpacity: 0.3, strokeOpacity: 0.3});
@@ -104,16 +148,63 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 			geoc.getLocation(mPoint, function(rs){
 				$scope.aroundKey = rs.address;
 				if(rs.surroundingPois.length != 0){
-					$scope.aroundKey += rs.surroundingPois[0].title;
+					$timeout(function(){
+						$scope.aroundKey += rs.surroundingPois[0].title;
+					}, 500);
 				}
-				$scope.$digest();
 			});
+		});
+	}
+	// ------------ Block about circle display -------------------------
+	
+	function showSuperCircle(){
+		if($scope.superChargerCircleList.length == 0){
+			angular.forEach($scope.superChargerMarkerList, function(marker){
+				var yellow = new BMap.Circle(marker.getPosition(),400000,{fillColor:"yellow", strokeWeight: 1 ,fillOpacity: 0.1, strokeOpacity: 0.2});
+				var green = new BMap.Circle(marker.getPosition(),200000,{fillColor:"green", strokeWeight: 1 ,fillOpacity: 0.5, strokeOpacity: 0.5});
+				$scope.superChargerCircleList.push(yellow);
+				$scope.superChargerCircleList.push(green);
+			});
+		}
+		angular.forEach($scope.superChargerCircleList, function(circle){
+			map.addOverlay(circle);
+		});
+	}
+	
+	function hideSuperCircle(){
+		if($scope.superChargerCircleList.length == 0)
+			return ;
+		angular.forEach($scope.superChargerCircleList, function(circle){
+			map.removeOverlay(circle);
+		});
+	}
+	
+	function showOtherCircle(){
+		if($scope.otherChargerCircleList.length == 0){
+			angular.forEach($scope.otherChargerMarkerList, function(marker){
+				var yellow = new BMap.Circle(marker.getPosition(),400000,{fillColor:"yellow", strokeWeight: 1 ,fillOpacity: 0.1, strokeOpacity: 0.2});
+				var green = new BMap.Circle(marker.getPosition(),200000,{fillColor:"green", strokeWeight: 1 ,fillOpacity: 0.2, strokeOpacity: 0.3});
+				$scope.otherChargerCircleList.push(yellow);
+				$scope.otherChargerCircleList.push(green);
+			});
+		}
+		angular.forEach($scope.otherChargerCircleList, function(circle){
+			map.addOverlay(circle);
+		});
+	}
+	
+	function hideOtherCircle(){
+		if($scope.otherChargerCircleList.length == 0)
+			return ;
+		angular.forEach($scope.otherChargerCircleList, function(circle){
+			map.removeOverlay(circle);
 		});
 	}
 	
 	// -------------- Block about marker display ----------------------------
 	function showMarkers(markerList){
 		angular.forEach(markerList, function(marker){
+			map.addOverlay(marker);
 			marker.show();
 		});
 	}
@@ -144,7 +235,6 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 				angular.forEach(response, function(item){
 					var marker = createMarker(item, icon);
 					$scope.superChargerMarkerList.push(marker);
-					map.addOverlay(marker);
 				});
 				showMarkers($scope.superChargerMarkerList);
 			});
@@ -173,7 +263,6 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 				angular.forEach(response, function(item){
 					var marker = createMarker(item, icon);
 					$scope.otherChargerMarkerList.push(marker);
-					map.addOverlay(marker);
 				});
 				showMarkers($scope.otherChargerMarkerList);
 			});
@@ -256,7 +345,7 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 	}
 
 	function setPlace(myValue){
-		map.clearOverlays();    //清除地图上所有覆盖物
+		$scope.clearAll();
 		localSearchByKey(myValue, true);
 	}
 	
@@ -302,8 +391,10 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 		var geolocation = new BMap.Geolocation();
 		geolocation.getCurrentPosition(function(r){
 			if(this.getStatus() === BMAP_STATUS_SUCCESS){
-				map.clearOverlays();
+				$scope.clearAll();
+				
 				map.addOverlay(new BMap.Marker(r.point));
+				
 				map.centerAndZoom(r.point, 15);
 				
 				defered.resolve(r.point);
@@ -327,110 +418,6 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q){
 	}
 });
 
-
-
 function mousedown(event){
 	console.log(event);
 }
-
-
-
-
-
-// 百度地图API功能
-//	function G(id) {
-//		return document.getElementById(id);
-//	}
-//
-//	var map = new BMap.Map("allmap");
-//	map.centerAndZoom("北京",12);                   // 初始化地图,设置城市和地图级别。
-//
-//	var suggestIdAC = new BMap.Autocomplete(    //建立一个自动完成的对象
-//		{"input" : "suggestId"
-//		,"location" : map
-//	});
-//	suggestIdAC.addEventListener("onhighlight", function(e){
-//		autoCompleteHighlight(e);
-//	});
-//	suggestIdAC.addEventListener("onconfirm", function(e){
-//		autoCompleteConfirm(e,true);
-//	});
-//	
-//	var startInputAC = new BMap.Autocomplete(    //建立一个自动完成的对象
-//			{"input" : "startInput"
-//			,"location" : map
-//		});
-//	startInputAC.addEventListener("onhighlight", function(e){ 
-//		autoCompleteHighlight(e);
-//	});
-//	startInputAC.addEventListener("onconfirm", function(e){
-//		autoCompleteConfirm(e,false);
-//	});
-//		
-//	var endInputAC = new BMap.Autocomplete(    //建立一个自动完成的对象
-//			{"input" : "endInput"
-//			,"location" : map
-//		});
-//	endInputAC.addEventListener("onhighlight", function(e){ 
-//		autoCompleteHighlight(e);
-//	});
-//	endInputAC.addEventListener("onconfirm", function(e){
-//		autoCompleteConfirm(e,false);
-//	});
-//	
-//	var myValue;
-//	//鼠标放在下拉列表上的事件
-//	function autoCompleteHighlight(e){
-//		var str = "";
-//		var _value = e.fromitem.value;
-//		var value = "";
-//		if (e.fromitem.index > -1) {
-//			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-//		}    
-//		str = "FromItem<br />index = " + e.fromitem.index + "<br />value = " + value;
-//		
-//		value = "";
-//		if (e.toitem.index > -1) {
-//			_value = e.toitem.value;
-//			value = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-//		}    
-//		str += "<br />ToItem<br />index = " + e.toitem.index + "<br />value = " + value;
-//		G("searchResultPanel").innerHTML = str;		
-//	}
-//	
-//	function autoCompleteConfirm(e, isSetPlace){
-//		var _value = e.item.value;
-//		myValue = _value.province +  _value.city +  _value.district +  _value.street +  _value.business;
-//		G("searchResultPanel").innerHTML ="onconfirm<br />index = " + e.item.index + "<br />myValue = " + myValue;
-//		
-//		// check if the function need to auto set place
-//		if(isSetPlace)
-//			setPlace();
-//	}
-//
-//	function setPlace(){
-//		map.clearOverlays();    //清除地图上所有覆盖物
-//		function myFun(){
-//			var pp = local.getResults().getPoi(0).point;    //获取第一个智能搜索的结果
-//			map.centerAndZoom(pp, 18);
-//			map.addOverlay(new BMap.Marker(pp));    //添加标注
-//		}
-//		var local = new BMap.LocalSearch(map, { //智能搜索
-//		  onSearchComplete: myFun
-//		});
-//		local.search(myValue);
-//	}
-//	
-//	
-//	//三种驾车策略：最少时间，最短距离，避开高速
-//	var routePolicy = [BMAP_DRIVING_POLICY_LEAST_TIME,BMAP_DRIVING_POLICY_LEAST_DISTANCE,BMAP_DRIVING_POLICY_AVOID_HIGHWAYS];
-//	$("#resultBtn").click(function(){
-//		var start = $("#startInput").val();
-//		var end = $("#endInput").val();
-//		map.clearOverlays(); 
-//		search(start,end,BMAP_DRIVING_POLICY_LEAST_DISTANCE); 
-//		function search(start,end,route){ 
-//			var driving = new BMap.DrivingRoute(map, {renderOptions:{map: map, autoViewport: true},policy: route});
-//			driving.search(start,end);
-//		}
-//	});

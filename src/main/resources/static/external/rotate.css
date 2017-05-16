@@ -1,0 +1,169 @@
+@-webkit-keyframes slidePageInFromLeft{0%{opacity:0;}30%{opacity:1;}100%{opacity:1;left:0;}}
+@-webkit-keyframes slidePageBackLeft{0%{opacity:1;left:0;-webkit-transform:scale(0.95);transform:scale(0.95);}10%{-webkit-transform:scale(0.9);transform:scale(0.9);}70%{opacity:1;}100%{opacity:0;left:-150%;}} 0% {
+    -webkit-transform: translateX(-2em) scale(1);
+    -ms-transform: translateX(-2em) scale(1);
+    transform: translateX(-2em) scale(1);
+    opacity: 1;
+}
+.rotate3dY:hover .faces:hover{-webkit-transform:rotateY(180deg);-ms-transform:rotateY(180deg);transform:rotateY(180deg);}
+.rotate3dY .back{-webkit-transform:rotateY(180deg);-ms-transform:rotateY(180deg);transform:rotateY(180deg);}
+.rotate3dY .front{background-color:#ddd;color:#455962;}.faces .back{background-color:#455962;color:#ddd;}
+
+.faces div{
+	display:block;
+	position:absolute;
+	top:0;left:0;right:0;bottom:0;width:100%;height:100%;-webkit-backface-visibility:hidden;-ms-backface-visibility:hidden;backface-visibility:hidden;
+}
+.rotate3d{
+	-webkit-perspective:800px;-ms-perspective:800px;perspective:800px;overflow:visible;
+}
+.faces{
+  	-webkit-transform-style:preserve-3d;-webkit-transition:-webkit-transform 1s;-ms-transform-style:preserve-3d;transform-style:preserve-3d;transition:-webkit-transform 1s;transition:-ms-transform 1s;
+  	transition:transform 1s;
+}
+
+  70% {
+    -webkit-transform: translateZ(-5em) scale(0.6);
+    -ms-transform: translateZ(-5em) scale(0.6);
+    transform: translateZ(-5em) scale(0.6);
+    opacity: 0.5;
+  }
+
+  95% {
+    -webkit-transform: translateZ(-5em) scale(0.6);
+    -ms-transform: translateZ(-5em) scale(0.6);
+    transform: translateZ(-5em) scale(0.6);
+    opacity: 0.5;
+  }
+
+  100% {
+    -webkit-transform: translateZ(-5em) scale(0);
+    -ms-transform: translateZ(-5em) scale(0);
+    transform: translateZ(-5em) scale(0);
+    opacity: 0;
+  }
+}
+
+  0% {
+    -webkit-transform: translateZ(-5em) scale(0);
+    -ms-transform: translateZ(-5em) scale(0);
+    transform: translateZ(-5em) scale(0);
+    opacity: 0;
+  }
+
+  100% {
+    -webkit-transform: translateZ(0) scale(1);
+    -ms-transform: translateZ(0) scale(1);
+    transform: translateZ(0) scale(1);
+    opacity: 1;
+  }
+}
+
+  0% {
+    -webkit-transform: rotateY(-90deg) translateZ(5em);
+    -ms-transform: rotateY(-90deg) translateZ(5em);
+    transform: rotateY(-90deg) translateZ(5em);
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    -webkit-transform: rotateY(0deg) translateZ(0);
+    -ms-transform: rotateY(0deg) translateZ(0);
+    transform: rotateY(0deg) translateZ(0);
+    opacity: 1;
+  }
+}
+
+  0% {
+    left: 0;
+    -webkit-transform: rotateY(0deg) translateZ(0);
+    -ms-transform: rotateY(0deg) translateZ(0);
+    transform: rotateY(0deg) translateZ(0);
+    opacity: 1;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    left: -150%;
+    -webkit-transform: rotateY(0deg);
+    -ms-transform: rotateY(0deg);
+    transform: rotateY(0deg);
+  }
+}
+
+  0% {
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    left: 0;
+  }
+}
+
+  0% {
+    opacity: 1;
+    left: 0;
+    -webkit-transform: scale(0.95);
+    -ms-transform: scale(0.95);
+    transform: scale(0.95);
+  }
+
+  10% {
+    -webkit-transform: scale(0.9);
+    -ms-transform: scale(0.9);
+    transform: scale(0.9);
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    left: -150%;
+  }
+}
+
+  0% {
+    -webkit-transform: translateX(200px);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 1;
+  }
+
+  100% {
+    -webkit-transform: translateX(0);
+    opacity: 1;
+  }
+}
+/*======================= media queries for animations =======================*/
+
+@media screen and (min-width: 64em) {
+  @keyframes fadeInForward {
+      80% {
+        opacity: 0.9;
+      }
+
+      100% {
+        -webkit-transform: translateZ(0) scale(1) translateX(-2em);
+        -ms-transform: translateZ(0) scale(1) translateX(-2em);
+        transform: translateZ(0) scale(1) translateX(-2em);
+        opacity: 1;
+      }
+  }
+}

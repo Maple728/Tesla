@@ -34,7 +34,7 @@ div.inline-div {
 }
 
 .sidebar .sidebar-item {
-    padding: 30px 10px;
+    padding: 38px 10px;
     border-color: rgb(229, 229, 229);
     border-style: solid;
     border-width: 1px;
@@ -52,4 +52,50 @@ div.inline-div {
 .bottom-nav button {
 	width:150px;
 	margin-right:20px;
+}
+
+.range-hero {
+    width: 100%;
+    height:170px;
+    margin-left: auto;
+    margin-right: auto;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url("/global/imgs/tesla-car-body.jpg");
+}
+
+.hero-wheels-container {
+    margin: auto;
+    width: 100%;
+    height: 100px;
+    position: relative;
+}
+
+.wheels-nineteen {
+    background-image: url("/global/imgs/tesla-car-wheel.png");
+    -webkit-animation: infinite-spinning 250ms steps(6) infinite;
+    animation: infinite-spinning 250ms steps(6) infinite;
+}
+
+.wheels-front, .wheels-rear {
+    width: 35px;
+    height: 35px;
+    bottom: -32px;
+    position: absolute;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: cover;
+}
+
+.wheels-front {
+    left: 44px;
+}
+
+.wheels-rear {
+    left: 180px;
+}
+
+@-webkit-keyframes infinite-spinning{
+	from{-webkit-transform:rotate(0deg);transform:rotate(0deg);}to{-webkit-transform:rotate(360deg);transform:rotate(360deg);}
 }

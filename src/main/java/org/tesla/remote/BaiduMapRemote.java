@@ -14,7 +14,7 @@ import org.tesla.models.TeslaCharger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class BaiduMapRemote {
-	private final static String baiduAK = "VbNe7EOv2sxztffNnNZBa5KbcZ99SwwP";
+	private final static String baiduAK = "XyhQAWr2mGwd5xBOSg8tZ4w8lDc6QTuh";
 	
 	private static boolean isLimit = false;
 	
