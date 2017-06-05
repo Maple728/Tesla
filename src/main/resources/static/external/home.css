@@ -99,3 +99,8 @@ div.inline-div {
 @-webkit-keyframes infinite-spinning{
 	from{-webkit-transform:rotate(0deg);transform:rotate(0deg);}to{-webkit-transform:rotate(360deg);transform:rotate(360deg);}
 }
+
+#r-result,#r-result table
+{
+	width:100%;
+}

@@ -4,7 +4,9 @@ angular.module('homeApp')
 		getAllChargers :　getAllChargers,
 		getAllSuperChargers : getAllSuperChargers,
 		getAllOtherChargers : getAllOtherChargers,
-		getNavigationResult : getNavigationResult
+		getNavigationResult : getNavigationResult,
+		
+		runMatlab : runMatlab
 	};
 	return result;
 	
@@ -28,5 +30,9 @@ angular.module('homeApp')
 			maxDistance : maxDistance
 		};
 		return $http.post('/tesla/navigate', data);
+	}
+	
+	function runMatlab(){
+		$http.get('/tesla/runTeslaMatlab');
 	}
 });

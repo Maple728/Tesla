@@ -1,0 +1,7 @@
+上传代码: 
+	git add -A
+	git commit -m "comment"
+	git push origin master
+下载代码：
+git pull origin master
+当前目录

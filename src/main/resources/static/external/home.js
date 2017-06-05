@@ -1,7 +1,7 @@
 // Customized block
 
 // init baidu map
-var map = new BMap.Map("allmap");
+var map = new BMap.Map("allmap", {enableMapClick:false});
 initMap(map);
 
 function initMap(map){
@@ -18,8 +18,8 @@ function initMap(map){
 	map.addControl(top_left_navigation); 
 }
 
-var homeApp = angular.module('homeApp', []);
-homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
+var homeApp = angular.module('homeApp', ['teslaInfo']);
+homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout, $compile){
 	$scope.maxRange = 1000;		// kilometers
 	$scope.battery = 70;	// percentage
 	$scope.range = 400;		// kilometers
@@ -33,11 +33,15 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 	
 	$scope.superChargerCircleList = [];
 	$scope.otherChargerCircleList = [];
-	
+	 
 	$scope.isShowSuper = true;
 	$scope.isShowOther = false;
 	
 	// --------------- Block for button events --------------------
+	$scope.runMatlab = function(){
+		remoteService.runMatlab();
+	}
+	
 	$scope.navSuper = function(){
 		$scope.isShowSuper = !$scope.isShowSuper;
 		if($scope.isShowSuper){
@@ -75,11 +79,15 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 	$scope.addCircles = function(){
 		$scope.isShowCircle = !$scope.isShowCircle;
 		if($scope.isShowCircle){
+			// init circle
+			var radius = $scope.range * 1000;
 			if($scope.isShowSuper){
-				showSuperCircle();
+				$scope.superChargerCircleList = [];
+				showSuperCircle(radius);
 			}
 			if($scope.isShowOther){
-				showOtherCircle();
+				$scope.otherChargerCircleList = [];
+				showOtherCircle(radius);
 			}
 		}
 		else {
@@ -103,12 +111,34 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 			localSearchByKey($scope.destKey, false).then(function(result){
 				dest = result;
 				
-				console.log($scope.originKey);
-				console.log(origin);
-				console.log($scope.destKey + dest);
-				console.log(dest);
 				remoteService.getNavigationResult(origin, dest, $scope.range * $scope.battery * 10, $scope.range * 1000).success(function(response){
-					console.log(response);
+					
+					if(response[response.length - 1].nid == 0 && response.length > 1){
+						// 可达
+					}
+					else {
+						// 不可达
+						if(response.length == 1){
+							alert('该起点不可到达任何地点');
+							return;
+						}
+						else{
+							alert('当前终点不可达，将为您导航至距离终点最近地点！');
+						}
+					}
+					
+					// set drive routes
+					var startPoint = new BMap.Point(response[0].longitude, response[0].latitude)
+					var endPoint = new BMap.Point(response[response.length - 1].longitude, response[response.length - 1].latitude);
+					
+					var ways = [];
+					for(var i = 1; i < response.length - 1; i++){
+						ways.push(new BMap.Point(response[i].longitude, response[i].latitude));
+					}
+					$scope.clearAll();
+					var driving = new BMap.DrivingRoute(map, {renderOptions:{map: map, panel: "drive-result", autoViewport: true}});
+					driving.search(startPoint, endPoint,{waypoints:ways});
+					alert('下拉显示导航！');
 				});
 			});
 		});
@@ -157,11 +187,11 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 	}
 	// ------------ Block about circle display -------------------------
 	
-	function showSuperCircle(){
+	function showSuperCircle(radius){
 		if($scope.superChargerCircleList.length == 0){
 			angular.forEach($scope.superChargerMarkerList, function(marker){
-				var yellow = new BMap.Circle(marker.getPosition(),400000,{fillColor:"yellow", strokeWeight: 1 ,fillOpacity: 0.1, strokeOpacity: 0.2});
-				var green = new BMap.Circle(marker.getPosition(),200000,{fillColor:"green", strokeWeight: 1 ,fillOpacity: 0.5, strokeOpacity: 0.5});
+				var yellow = new BMap.Circle(marker.getPosition(),radius,{fillColor:"yellow", strokeWeight: 1 ,fillOpacity: 0.1, strokeOpacity: 0.2});
+				var green = new BMap.Circle(marker.getPosition(),radius / 2,{fillColor:"green", strokeWeight: 1 ,fillOpacity: 0.5, strokeOpacity: 0.5});
 				$scope.superChargerCircleList.push(yellow);
 				$scope.superChargerCircleList.push(green);
 			});
@@ -179,11 +209,11 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 		});
 	}
 	
-	function showOtherCircle(){
+	function showOtherCircle(radius){
 		if($scope.otherChargerCircleList.length == 0){
 			angular.forEach($scope.otherChargerMarkerList, function(marker){
-				var yellow = new BMap.Circle(marker.getPosition(),400000,{fillColor:"yellow", strokeWeight: 1 ,fillOpacity: 0.1, strokeOpacity: 0.2});
-				var green = new BMap.Circle(marker.getPosition(),200000,{fillColor:"green", strokeWeight: 1 ,fillOpacity: 0.2, strokeOpacity: 0.3});
+				var yellow = new BMap.Circle(marker.getPosition(),radius,{fillColor:"yellow", strokeWeight: 1 ,fillOpacity: 0.1, strokeOpacity: 0.2});
+				var green = new BMap.Circle(marker.getPosition(),radius / 2,{fillColor:"green", strokeWeight: 1 ,fillOpacity: 0.2, strokeOpacity: 0.3});
 				$scope.otherChargerCircleList.push(yellow);
 				$scope.otherChargerCircleList.push(green);
 			});
@@ -215,12 +245,8 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 		});	
 	}
 	
-	function createMarker(charger, icon){
-		var mPoint = new BMap.Point(charger.longitude, charger.latitude);
-		return new BMap.Marker(mPoint, {
-				icon : icon
-			}
-		);
+	function createMarker(marker, icon) {
+		
 	}
 	// Show all super chargers
 	showSuperChargers();
@@ -232,8 +258,9 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 					    fillColor: "rgb(255,0,0)",	//填充颜色
 					    fillOpacity: 0.8	//填充透明度
 				});
-				angular.forEach(response, function(item){
+				angular.forEach(response, function(item){	
 					var marker = createMarker(item, icon);
+					$scope.addMarkerListener(marker, item);
 					$scope.superChargerMarkerList.push(marker);
 				});
 				showMarkers($scope.superChargerMarkerList);
@@ -244,6 +271,27 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 		}
 	};
 	
+	function createMarker(charger, icon){
+		var mPoint = new BMap.Point(charger.longitude, charger.latitude);
+		return new BMap.Marker(mPoint, {
+				icon : icon
+			}
+		);
+	}
+	
+    $scope.addMarkerListener = function(marker, charger){
+        marker.addEventListener("click", function(){
+        	$timeout(function(){
+        		$scope.selectedCharger = charger;
+        		openModal();
+        	}, 500);
+        });
+    }
+    
+    function openModal(){
+    	$('#chargerModal').modal('show');
+    }
+    
 	function hideSuperChargers(){
 		if($scope.superChargerMarkerList.length == 0)
 			return ;
@@ -262,6 +310,7 @@ homeApp.controller('homeCtrl', function($scope, remoteService, $q, $timeout){
 				});
 				angular.forEach(response, function(item){
 					var marker = createMarker(item, icon);
+					$scope.addMarkerListener(marker, item);
 					$scope.otherChargerMarkerList.push(marker);
 				});
 				showMarkers($scope.otherChargerMarkerList);

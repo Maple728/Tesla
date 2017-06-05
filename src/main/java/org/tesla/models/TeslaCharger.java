@@ -92,6 +92,7 @@ public class TeslaCharger {
 		return this.getNid();
 	}
 	
+	//Determine the type of charger
 	public boolean isSuperCharger(){
 		if(locationType == null)
 			return false;

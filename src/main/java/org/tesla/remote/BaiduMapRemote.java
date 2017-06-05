@@ -45,7 +45,11 @@ public class BaiduMapRemote {
 		
 		String fullUrl = url + paramOrigins + paramDests;
 		String response = HttpRequest.sendGet(fullUrl);
-		
+		try {
+			Thread.currentThread().sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		ObjectMapper mapper = new ObjectMapper();
 		List<Map> results = null;
 		Map map;
@@ -55,7 +59,7 @@ public class BaiduMapRemote {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		
+		// Send the information of change the method to Console
 		if(results == null){
 			logger.error("The count of Baidu API invoking is upper limit! Now will use direct calculate------- Baidu invoke count:" + TeslaApplication.baiduAPICount);
 			isLimit = true;
@@ -82,10 +86,8 @@ public class BaiduMapRemote {
 				result[i] = dist;
 			}
 			else {
-				if(perList.size() < TeslaConstants.BAIDU_ROUTE_MAX_COUNT){
-					perList.add(destChargerList.get(i));
-				}
-				else {
+				perList.add(destChargerList.get(i));
+				if(perList.size() >= TeslaConstants.BAIDU_ROUTE_MAX_COUNT){
 					double[] distances = BaiduMapRemote.getDistBetweenChargersByBaidu(originCharger, perList);
 					for(int j = 0; j < distances.length; j++){
 						result[destChargerList.indexOf(perList.get(j))] = distances[j];

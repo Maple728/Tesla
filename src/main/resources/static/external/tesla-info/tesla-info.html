@@ -1,0 +1,21 @@
+<div class="tesla-info" style="margin:10px 30px">
+	<div class="row">
+		<h3>
+			{{ charger.title }}
+		</h3>
+	</div>
+	<div class="row" ng-switch="charger.superCharger">
+		<h5 ng-switch-when="true">{{superChargerType}}</h5>
+		<h5 ng-switch-when="false">{{normalChargerType}}</h5>
+	</div>
+	<div class="row">
+		<p>
+			{{ charger.address }}
+		</p>
+	</div>
+	<div class="row">
+		<p>
+			{{ charger.city }} {{ charger.provinceState }}
+		</p>
+	</div>
+</div>
