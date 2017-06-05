@@ -111,7 +111,7 @@ public class TeslaController {
 	
 	@RequestMapping("/runTeslaMatlab")
 	public void runTeslaMatlab() throws IOException{
-		Runtime.getRuntime().exec( "matlab -nodisplay -nojvm -nodesktop  -r run('D:\\Program\" \"Files\\MATLAB\\R2016a\\bin\\льк╧ю╜\\interface')");	
+		Runtime.getRuntime().exec( "cmd /c start runTesla.bat");
 	}
 	
 	
